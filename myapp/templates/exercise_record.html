@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>運動記録</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <h1>運動記録</h1>
+    <form method="post" action="{% url 'myapp:submit_exercise_record' %}">
+        {% csrf_token %}
+        <label for="duration">運動時間（分）:</label>
+        <input type="range" id="duration" name="duration" min="0" max="60" value="30">
+        <span id="durationDisplay">30分</span>
+        <div id="warning" style="color: red;"></div>
+
+        <label for="date">日付:</label>
+        <input type="date" id="date" name="date" value="{{ today }}">
+
+        <button type="submit">保存</button>
+    </form>
+
+    <div id="records">
+        {% for record in exercise_records %}
+        <div>
+            <p>{{ record.date }}: 運動時間 {{ record.duration }}分</p>
+        </div>
+        {% endfor %}
+    </div>
+    <a href="{% url 'myapp:main_menu' %}">メインメニューに戻る</a>
+
+    <script>
+        const durationInput = document.getElementById('duration');
+        const durationDisplay = document.getElementById('durationDisplay');
+        const warning = document.getElementById('warning');
+        
+        durationInput.oninput = function() {
+            durationDisplay.textContent = this.value + '分';
+            if (this.value < 30) {
+                warning.textContent = '警告: 推奨される運動時間は30分以上です！';
+            } else {
+                warning.textContent = '';
+            }
+        };
+    </script>
+</body>
+</html>
