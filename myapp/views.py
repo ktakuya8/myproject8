@@ -14,8 +14,8 @@ def register(request):
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password1'])
             user.save()
-            login(request, user, backend='myapp.authentication.EmailBackend')  # backend 属性を設定
-            print(request.user.is_authenticated)  # 登録とログイン後の認証状態を確認
+            login(request, user, backend='myapp.authentication.EmailBackend')  
+            print(request.user.is_authenticated)  
             return redirect('myapp:main_menu')
         else:
             print("Form errors", form.errors)
@@ -32,10 +32,10 @@ def my_login_view(request):
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
-            print(request.user.is_authenticated)  # ログイン後の認証状態を確認
+            print(request.user.is_authenticated) 
             return redirect('myapp:main_menu')
         else:
-            print("Invalid login attempt")  # 認証失敗を確認
+            print("Invalid login attempt") 
             return render(request, 'registration/login.html', {'error': 'Invalid email or password'})
     else:
         return render(request, 'registration/login.html')
@@ -94,7 +94,7 @@ def main_menu(request):
 def food_record(request):
     user_profile = UserProfile.objects.get(user=request.user)
     birthdate = user_profile.user.birth_date
-    gender = 'M' if user_profile.user.gender == '男' else 'F'  # 性別を変換
+    gender = 'M' if user_profile.user.gender == '男' else 'F'  
     today = date.today()
     age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 

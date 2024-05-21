@@ -26,15 +26,15 @@
             color: red;
         }
     </style>
-    <!-- JavaScriptを追加 -->
+   
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var slider = document.getElementById('calories');
             var output = document.getElementById('calories-output');
-            output.innerHTML = slider.value + ' kcal'; // 初期値を表示
+            output.innerHTML = slider.value + ' kcal'; 
 
             slider.oninput = function () {
-                output.innerHTML = this.value + ' kcal'; // スライダーを動かすと表示が更新される
+                output.innerHTML = this.value + ' kcal'; 
             }
         });
     </script>
@@ -47,7 +47,7 @@
             <div class="form-group">
                 <label for="calories">摂取カロリー(kcal):</label>
                 <input type="range" id="calories" name="calories" min="0" max="3000" step="50" value="{{ form.cleaned_data.calories|default:'1500' }}">
-                <!-- spanタグにidを追加 -->
+             
                 <span id="calories-output">{{ form.cleaned_data.calories|default:'1500' }} kcal</span>
             </div>
             <div class="form-group">
@@ -86,7 +86,7 @@
         <p>昨日の摂取カロリー: {{ yesterday_calories }} kcal (目標: {{ goal_calories }} kcal)</p>
         <p>達成率: {{ achievement_percent }}%</p>
 
-        <!-- 過去5日分の記録の表形式表示 -->
+        
         <h2>過去5日分の記録</h2>
         <table>
             <thead>
