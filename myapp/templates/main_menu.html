@@ -42,20 +42,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<!-- Chart.js -->
+<!-- Chart.js and Annotation Plugin -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const foodData = {{ past_week_food|safe }};
     const exerciseData = {{ past_week_exercise|safe }};
     const sleepData = {{ past_week_sleep|safe }};
 
-    createChart('foodChart', foodData, '摂取カロリー (kcal)', 'rgb(255, 99, 132)');
-    createChart('exerciseChart', exerciseData, '運動時間 (分)', 'rgb(54, 162, 235)');
-    createChart('sleepChart', sleepData, '睡眠時間 (時間)', 'rgb(75, 192, 192)');
+    // 基準線の値を設計図から取得して設定
+    createChart('foodChart', foodData, '摂取カロリー (kcal)', 'rgb(255, 99, 132)', 2650);
+    createChart('exerciseChart', exerciseData, '運動時間 (分)', 'rgb(54, 162, 235)', 30);
+    createChart('sleepChart', sleepData, '睡眠時間 (時間)', 'rgb(75, 192, 192)', 8);
 });
 
-function createChart(chartId, data, label, borderColor) {
+function createChart(chartId, data, label, borderColor, baseline) {
     const ctx = document.getElementById(chartId).getContext('2d');
     new Chart(ctx, {
         type: 'line',
@@ -74,6 +76,24 @@ function createChart(chartId, data, label, borderColor) {
             scales: {
                 y: {
                     beginAtZero: true
+                }
+            },
+            plugins: {
+                annotation: {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            yMin: baseline,
+                            yMax: baseline,
+                            borderColor: 'red',
+                            borderWidth: 2,
+                            label: {
+                                content: '基準値: ' + baseline,
+                                enabled: true,
+                                position: 'center'
+                            }
+                        }
+                    }
                 }
             }
         }

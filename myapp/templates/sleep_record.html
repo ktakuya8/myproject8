@@ -6,29 +6,31 @@
     <title>睡眠記録</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
-<body>
-    <h1>睡眠記録</h1>
-    <form method="post" action="{% url 'myapp:submit_sleep_record' %}">
-        {% csrf_token %}
-        <label for="duration">睡眠時間（時間）:</label>
-        <input type="range" id="duration" name="duration" min="0" max="12" value="8">
-        <span id="durationDisplay">8時間</span>
-        <div id="warning" style="color: red;"></div>
+<body class="body-background">
+    <div class="container">
+        <h1 class="title">睡眠記録</h1>
+        <form method="post" action="{% url 'myapp:submit_sleep_record' %}" class="form-group">
+            {% csrf_token %}
+            <label for="duration" class="form-label">睡眠時間（時間）:</label>
+            <input type="range" id="duration" name="duration" min="0" max="12" value="8" class="input-range">
+            <span id="durationDisplay" class="duration-display">8時間</span>
+            <div id="warning" class="warning-message" style="color: red;"></div>
 
-        <label for="date">日付:</label>
-        <input type="date" id="date" name="date" value="{{ yesterday }}">
+            <label for="date" class="form-label">日付:</label>
+            <input type="date" id="date" name="date" value="{{ yesterday }}" class="input-date">
 
-        <button type="submit">保存</button>
-    </form>
+            <button type="submit" class="button">保存</button>
+        </form>
 
-    <div id="records">
-        {% for record in sleep_records %}
-        <div>
-            <p>{{ record.date }}: 睡眠時間 {{ record.duration }}時間</p>
+        <div id="records" class="records-container">
+            {% for record in sleep_records %}
+            <div class="record">
+                <p>{{ record.date }}: 睡眠時間 {{ record.duration }}時間</p>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        <a href="{% url 'myapp:main_menu' %}" class="back-link">メインメニューに戻る</a>
     </div>
-    <a href="{% url 'myapp:main_menu' %}">メインメニューに戻る</a>
 
     <script>
         const durationInput = document.getElementById('duration');
@@ -39,7 +41,6 @@
             const durationValue = parseInt(this.value);
             durationDisplay.textContent = durationValue + '時間';
 
-            
             if (durationValue < 6 || durationValue > 10) {
                 warningDiv.textContent = '推奨睡眠時間（8時間）から大きく外れています！';
             } else {
