@@ -102,6 +102,9 @@ def food_record(request):
     recommended_calories_plus_500 = recommended_calories + 500
     recommended_calories_minus_500 = recommended_calories - 500
 
+   
+    calories_by_age_gender = get_calories_by_age_gender()
+
     form = FoodRecordForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         record = form.save(commit=False)
@@ -122,6 +125,7 @@ def food_record(request):
         'recommended_calories': recommended_calories,
         'recommended_calories_plus_500': recommended_calories_plus_500,
         'recommended_calories_minus_500': recommended_calories_minus_500,
+        'calories_by_age_gender': calories_by_age_gender,  
         'food_records': food_records,
         'birthdate': birthdate,
         'gender': gender,
@@ -133,6 +137,7 @@ def food_record(request):
         'past_five_days_records': past_five_days_records,
     }
     return render(request, 'food_record.html', context)
+
 
 def get_recommended_calories(age, gender):
     calories_by_age_gender = {
@@ -217,3 +222,17 @@ def submit_sleep_record(request):
 
 def index(request):
     return HttpResponse("Hello, world. This is the index page.")
+
+def get_calories_by_age_gender():
+    return {
+        '男性': {
+            '1-2': 950, '3-5': 1300, '6-7': 1550, '8-9': 1850, '10-11': 2250,
+            '12-14': 2600, '15-17': 2800, '18-29': 2650, '30-49': 2700,
+            '50-64': 2600, '65-74': 2400, '75+': 2100
+        },
+        '女性': {
+            '1-2': 900, '3-5': 1250, '6-7': 1450, '8-9': 1700, '10-11': 2100,
+            '12-14': 2400, '15-17': 2300, '18-29': 2000, '30-49': 2050,
+            '50-64': 1950, '65-74': 1850, '75+': 1650
+        }
+    }

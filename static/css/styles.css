@@ -314,3 +314,64 @@ input[type="date"] {
 #calorie-display.warning {
     color: red;
 }
+
+.exercise-record .form-group {
+    margin-bottom: 20px;
+}
+
+.exercise-record label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.exercise-record input[type="range"], 
+.exercise-record input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.exercise-record input:focus {
+    border-color: #5c67f2;
+}
+
+.exercise-record .button {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.exercise-record .button:hover {
+    background-color: #0056b3;
+}
+
+.exercise-record .records-container, 
+.exercise-record .record {
+    margin-top: 20px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.exercise-record .warning-message {
+    color: red;
+    margin-top: 10px;
+}
+
+.exercise-record .back-link {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.exercise-record .back-link:hover {
+    text-decoration: underline;
+}

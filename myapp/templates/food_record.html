@@ -52,7 +52,7 @@
             </div>
             <div class="form-group">
                 <label for="record_date">日付:</label>
-                <input type="date" id="record_date" name="record_date" required value="{{ today|date:'Y-m-d' }}">
+                <input type="date" id="record_date" name="date" required value="{{ today|date:'Y-m-d' }}">
             </div>
             {% if recommended_calories %}
                 {% if form.cleaned_data.calories|default:1500 > recommended_calories_plus_500 or form.cleaned_data.calories|default:1500 < recommended_calories_minus_500 %}
@@ -63,24 +63,29 @@
         </form>
 
         <h2>目安カロリー表</h2>
-        <table id="calorie-table">
-            <thead>
+<table id="calorie-table">
+    <thead>
+        <tr>
+            <th>性別</th>
+            <th>年齢</th>
+            <th>カロリー (kcal)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for gender, age_groups in calories_by_age_gender.items %}
+            {% for age_range, calories in age_groups.items %}
                 <tr>
-                    <th>年齢</th>
-                    <th>男性のカロリー</th>
-                    <th>女性のカロリー</th>
+                    <td>{{ gender }}</td>
+                    <td>{{ age_range }}</td>
+                    <td>{{ calories }} kcal</td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for age_range, values in calories_by_age_gender.items %}
-                    <tr>
-                        <td>{{ age_range }}</td>
-                        <td>{{ values.M }} kcal</td>
-                        <td>{{ values.F }} kcal</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
 
         <h2>達成度合い</h2>
         <p>昨日の摂取カロリー: {{ yesterday_calories }} kcal (目標: {{ goal_calories }} kcal)</p>
