@@ -4,7 +4,25 @@
     {% load static %}
     <meta charset="UTF-8">
     <title>運動記録</title>
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .alert {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body class="body-background exercise-record">
     <div class="container">
@@ -14,7 +32,7 @@
             <label for="duration" class="form-label">運動時間（分）:</label>
             <input type="range" id="duration" name="duration" min="0" max="60" value="30" class="input-range">
             <span id="durationDisplay" class="duration-display">30分</span>
-            <div id="warning" class="warning-message"></div>
+            <div id="warning" class="alert"></div>
 
             <label for="date" class="form-label">日付:</label>
             <input type="date" id="date" name="date" value="{{ today }}" class="input-date">
@@ -22,14 +40,31 @@
             <button type="submit" class="button">保存</button>
         </form>
 
-        <div id="records" class="records-container">
-            {% for record in exercise_records %}
-            <div class="record">
-                <p>{{ record.date }}: 運動時間 {{ record.duration }}分</p>
-            </div>
-            {% endfor %}
+        <h2>過去5日分の記録</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>日付</th>
+                    <th>運動時間 (分)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in exercise_records %}
+                <tr>
+                    <td>{{ record.date|date:"Y-m-d" }}</td>
+                    <td>{{ record.duration }} 分</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">記録がありません。</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="text-center">
+            <a href="{% url 'myapp:main_menu' %}" class="back-link">メインメニューに戻る</a>
         </div>
-        <a href="{% url 'myapp:main_menu' %}" class="back-link">メインメニューに戻る</a>
     </div>
 
     <script>
@@ -47,6 +82,6 @@
                 warningDiv.textContent = '';
             }
         };
-    </script>
+    </script>    
 </body>
 </html>

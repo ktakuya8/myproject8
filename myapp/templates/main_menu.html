@@ -8,32 +8,20 @@
 <div class="container mt-4">
     <h1 class="text-center">メインメニュー</h1>
     
+
     <div class="chart-container">
         <h2>食事記録</h2>
         <canvas id="foodChart"></canvas>
-        <div class="progress-container">
-            <p>カロリー摂取: <span id="calorieProgress">{{ food_achievement }}%</span></p>
-        </div>
     </div>
     
     <div class="chart-container">
         <h2>運動記録</h2>
         <canvas id="exerciseChart"></canvas>
-        <div class="progress-container">
-            <p>運動時間: <span id="exerciseProgress">{{ exercise_achievement }}%</span></p>
-        </div>
     </div>
 
     <div class="chart-container">
         <h2>睡眠記録</h2>
         <canvas id="sleepChart"></canvas>
-        <div class="progress-container">
-            <p>睡眠時間: <span id="sleepProgress">{{ sleep_achievement }}%</span></p>
-        </div>
-    </div>
-   
-    <div class="text-center mt-3">
-        <a href="{% url 'myapp:logout' %}" class="btn btn-primary">ログアウト</a>
     </div>
 </div>
 
@@ -50,10 +38,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const foodData = {{ past_week_food|safe }};
     const exerciseData = {{ past_week_exercise|safe }};
     const sleepData = {{ past_week_sleep|safe }};
+    const targetCalories = {{ target_calories }};
+    const targetExerciseMinutes = {{ target_exercise_minutes }};
+    const targetSleepHours = {{ target_sleep_hours }};
 
-    // 基準線の値を設計図から取得して設定
-    createChart('foodChart', foodData, '摂取カロリー (kcal)', 'rgb(255, 99, 132)', 2650);
-    createChart('exerciseChart', exerciseData, '運動時間 (分)', 'rgb(54, 162, 235)', 30);
+    createChart('foodChart', foodData, '摂取カロリー (kcal)', 'rgb(255, 99, 132)', targetCalories);
+    createChart('exerciseChart', exerciseData, '運動時間 (分)', 'rgb(54, 162, 235)',30);
     createChart('sleepChart', sleepData, '睡眠時間 (時間)', 'rgb(75, 192, 192)', 8);
 });
 
@@ -62,7 +52,7 @@ function createChart(chartId, data, label, borderColor, baseline) {
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['月', '火', '水', '木', '金', '土', '日'],
+            labels: ['過去1週間', '前々日', '前日', '未来予測'],
             datasets: [{
                 label: label,
                 data: data,
@@ -100,4 +90,16 @@ function createChart(chartId, data, label, borderColor, baseline) {
     });
 }
 </script>
+
+<div class="progress-container">
+    <p>カロリー摂取: <span id="calorieProgress">{{ food_achievement }}%</span></p>
+</div>
+<div class="progress-container">
+    <p>運動時間: <span id="exerciseProgress">{{ exercise_achievement }}%</span></p>
+</div>
+<div class="progress-container">
+    <p>睡眠時間: <span id="sleepProgress">{{ sleep_achievement }}%</span></p>
+</div>
+
+
 {% endblock %}

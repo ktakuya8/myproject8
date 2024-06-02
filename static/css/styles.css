@@ -375,3 +375,92 @@ input[type="date"] {
 .exercise-record .back-link:hover {
     text-decoration: underline;
 }
+
+.sleep-record .form-group {
+    margin-bottom: 20px;
+}
+
+.sleep-record label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.sleep-record input[type="range"], 
+.sleep-record input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sleep-record input:focus {
+    border-color: #5c67f2;
+}
+
+.sleep-record .button {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sleep-record .button:hover {
+    background-color: #0056b3;
+}
+
+.sleep-record .records-container, 
+.sleep-record .record {
+    margin-top: 20px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.sleep-record .warning-message {
+    color: red;
+    margin-top: 10px;
+}
+
+.sleep-record .back-link {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.sleep-record .back-link:hover {
+    text-decoration: underline;
+}
+
+input[type="range"] {
+    width: 100%; /* 全幅を確保 */
+    height: 25px; /* 高さ調整 */
+    background: transparent; /* 透明背景 */
+    -webkit-appearance: none; /* スタイルのデフォルト設定を無効 */
+    margin: 10px 0; /* 上下のマージン */
+    transition: background-color 0.3s ease; /* 背景色の変更時のトランジション */
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    background: #3071a9; /* トラックの背景色 */
+    height: 8px; /* トラックの高さ */
+    border-radius: 4px; /* トラックの角を丸く */
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: 1px solid #000000; /* つまみの境界線 */
+    height: 36px; /* つまみの高さ */
+    width: 16px; /* つまみの幅 */
+    border-radius: 3px; /* つまみの角を丸く */
+    background: #ffffff; /* つまみの背景色 */
+    cursor: pointer; /* カーソルを指の形に */
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; /* 影の設定 */
+    position: relative; /* 相対位置 */
+    top: -8px; /* 上に少し移動 */
+}

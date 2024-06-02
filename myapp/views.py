@@ -7,6 +7,29 @@ from .models import CustomUser, FoodRecord, ExerciseRecord, SleepRecord, UserPro
 from django.utils import timezone
 from datetime import date, timedelta
 
+from datetime import datetime
+
+def calculate_age(birthdate):
+    today = datetime.today()
+    return today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+
+def get_recommended_calories(age, gender):
+    calories_by_age_gender = {
+        '男性': {'1-2': 950, '3-5': 1300, '6-7': 1550, '8-9': 1850, '10-11': 2250, '12-14': 2600, '15-17': 2800, '18-29': 2650, '30-49': 2700, '50-64': 2600, '65-74': 2400, '75+': 2100},
+        '女性': {'1-2': 900, '3-5': 1250, '6-7': 1450, '8-9': 1700, '10-11': 2100, '12-14': 2400, '15-17': 2300, '18-29': 2000, '30-49': 2050, '50-64': 1950, '65-74': 1850, '75+': 1650}
+    }
+    for age_range, calories in calories_by_age_gender[gender].items():
+        if '+' in age_range:
+            min_age = int(age_range.split('+')[0])
+            if age >= min_age:
+                return calories
+        else:
+            min_age, max_age = map(int, age_range.split('-'))
+            if min_age <= age <= max_age:
+                return calories
+    return 0
+
+
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -45,50 +68,81 @@ def my_logout_view(request):
     logout(request)
     return redirect('myapp:login')
 
+def calculate_age(birthdate):
+    today = datetime.today()
+    return today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+
+def get_recommended_calories(age, gender):
+    calories_by_age_gender = {
+        '男性': {'1-2': 950, '3-5': 1300, '6-7': 1550, '8-9': 1850, '10-11': 2250, '12-14': 2600, '15-17': 2800, '18-29': 2650, '30-49': 2700, '50-64': 2600, '65-74': 2400, '75+': 2100},
+        '女性': {'1-2': 900, '3-5': 1250, '6-7': 1450, '8-9': 1700, '10-11': 2100, '12-14': 2400, '15-17': 2300, '18-29': 2000, '30-49': 2050, '50-64': 1950, '65-74': 1850, '75+': 1650}
+    }
+    for age_range, calories in calories_by_age_gender[gender].items():
+        if '+' in age_range:
+            min_age = int(age_range.split('+')[0])
+            if age >= min_age:
+                return calories
+        else:
+            min_age, max_age = map(int, age_range.split('-'))
+            if min_age <= age <= max_age:
+                return calories
+    return 0
+
+@login_required
 @login_required
 def main_menu(request):
+    age = calculate_age(request.user.birth_date)
+    recommended_calories = get_recommended_calories(age, request.user.gender)
+
     user_profile, created = UserProfile.objects.get_or_create(
         user=request.user,
         defaults={
-            'target_calories': 2000,
-            'target_exercise_minutes': 60,
+            'target_calories': recommended_calories,
+            'target_exercise_minutes': 30
+            ,
             'target_sleep_hours': 8
         }
     )
-    yesterday = timezone.now().date() - timedelta(days=1)
-    records = {
-        'food': FoodRecord.objects.filter(user=request.user, date=yesterday).first(),
-        'exercise': ExerciseRecord.objects.filter(user=request.user, date=yesterday).first(),
-        'sleep': SleepRecord.objects.filter(user=request.user, date=yesterday).first()
-    }
-    achievements = {}
-    achieved_attrs = {
-        'food': 'calories',
-        'exercise': 'duration',
-        'sleep': 'duration'
-    }
-    for key, record in records.items():
-        if record:
-            target_attr = f'target_{key}_calories' if key == 'food' else f'target_{key}_minutes' if key == 'exercise' else f'target_{key}_hours'
-            target = getattr(user_profile, target_attr, 0)
-            achieved = getattr(record, achieved_attrs[key], 0)
-            achievements[f'{key}_achievement'] = (achieved / target * 100) if target else 0
-        else:
-            achievements[f'{key}_achievement'] = "No data"
 
+    context = {
+        'recommended_calories': recommended_calories,
+        'target_calories': user_profile.target_calories,
+        'target_exercise_minutes': user_profile.target_exercise_minutes,
+        'target_sleep_hours': user_profile.target_sleep_hours,
+        'past_week_food': [record.calories for record in FoodRecord.objects.filter(user=request.user).order_by('-date')[:7]],
+        'past_week_exercise': [record.duration for record in ExerciseRecord.objects.filter(user=request.user).order_by('-date')[:7]],
+        'past_week_sleep': [record.duration for record in SleepRecord.objects.filter(user=request.user).order_by('-date')[:7]],
+    }
+    return render(request, 'main_menu.html', context)
+
+
+
+
+    # 過去7日間のデータを取得
     past_week_data = {
         'food': [record.calories for record in FoodRecord.objects.filter(user=request.user).order_by('-date')[:7]],
         'exercise': [record.duration for record in ExerciseRecord.objects.filter(user=request.user).order_by('-date')[:7]],
         'sleep': [record.duration for record in SleepRecord.objects.filter(user=request.user).order_by('-date')[:7]]
     }
+    # 未来予測用の平均値を計算
+    future_prediction = {
+        'food': sum(past_week_data['food']) / len(past_week_data['food']) if past_week_data['food'] else 0,
+        'exercise': sum(past_week_data['exercise']) / len(past_week_data['exercise']) if past_week_data['exercise'] else 0,
+        'sleep': sum(past_week_data['sleep']) / len(past_week_data['sleep']) if past_week_data['sleep'] else 0
+    }
 
     context = {
-        **achievements,
+        'recommended_calories': recommended_calories,
         'past_week_food': past_week_data['food'],
         'past_week_exercise': past_week_data['exercise'],
-        'past_week_sleep': past_week_data['sleep']
+        'past_week_sleep': past_week_data['sleep'],
+        'future_prediction_food': future_prediction['food'],
+        'future_prediction_exercise': future_prediction['exercise'],
+        'future_prediction_sleep': future_prediction['sleep']
     }
     return render(request, 'main_menu.html', context)
+
+
 
 @login_required
 def food_record(request):
@@ -142,7 +196,7 @@ def food_record(request):
 def get_recommended_calories(age, gender):
     calories_by_age_gender = {
         'M': {'1-2': 950, '3-5': 1300, '6-7': 1550, '8-9': 1850, '10-11': 2250, '12-14': 2600, '15-17': 2800, '18-29': 2650, '30-49': 2700, '50-64': 2600, '65-74': 2400, '75+': 2100},
-        'F': {'1-2': 900, '3-5': 1250, '6-7': 1450, '8-9': 1700, '10-11': 2100, '12-14': 2400, '15-17': 2300, '18-29': 2000, '30-49': 2050, '50-64': 1950, '65-74': 1850, '75+': 1650}
+        'F':{'1-2': 900, '3-5': 1250, '6-7': 1450, '8-9': 1700, '10-11': 2100, '12-14': 2400, '15-17': 2300, '18-29': 2000, '30-49': 2050, '50-64': 1950, '65-74': 1850, '75+': 1650}
     }
     for age_range, calories in calories_by_age_gender[gender].items():
         if '+' in age_range:
@@ -157,34 +211,53 @@ def get_recommended_calories(age, gender):
 
 @login_required
 def exercise_record(request):
+    today = date.today()
+    five_days_ago = today - timedelta(days=5)
+
     if request.method == 'POST':
         form = ExerciseRecordForm(request.POST)
         if form.is_valid():
             record = form.save(commit=False)
             record.user = request.user
+            record.date = today  
             record.save()
-            return redirect('myapp:exercise_record')
+            return redirect('myapp:exercise_record')  
     else:
         form = ExerciseRecordForm()
+
+    exercise_records = ExerciseRecord.objects.filter(
+        user=request.user,
+        date__gte=five_days_ago
+    ).order_by('-date')
+
     return render(request, 'exercise_record.html', {
         'form': form,
-        'exercise_records': ExerciseRecord.objects.filter(user=request.user).order_by('-date')
+        'exercise_records': exercise_records
     })
 
 @login_required
 def sleep_record(request):
+    today = date.today()
+    five_days_ago = today - timedelta(days=5)
+    
     if request.method == 'POST':
         form = SleepRecordForm(request.POST)
         if form.is_valid():
             record = form.save(commit=False)
             record.user = request.user
-            record.save()
-            return redirect('myapp:sleep_record')
+            record.date = today  
+            return redirect('myapp:sleep_record')  
     else:
         form = SleepRecordForm()
+
+    sleep_records = SleepRecord.objects.filter(
+        user=request.user,
+        date__gte=five_days_ago
+    ).order_by('-date')
+
     return render(request, 'sleep_record.html', {
         'form': form,
-        'sleep_records': SleepRecord.objects.filter(user=request.user).order_by('-date')
+        'sleep_records': sleep_records
     })
 
 @login_required
@@ -236,3 +309,4 @@ def get_calories_by_age_gender():
             '50-64': 1950, '65-74': 1850, '75+': 1650
         }
     }
+
