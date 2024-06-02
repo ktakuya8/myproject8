@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .models import CustomUser, FoodRecord, ExerciseRecord, SleepRecord, UserProfile
 from django.utils import timezone
 from datetime import date, timedelta
-
+from django.db.models import Sum
 from datetime import datetime
 
 def calculate_age(birthdate):
@@ -88,27 +88,37 @@ def get_recommended_calories(age, gender):
                 return calories
     return 0
 
-@login_required
+from django.utils import timezone
+from django.db.models import Sum
+
 @login_required
 def main_menu(request):
-    age = calculate_age(request.user.birth_date)
-    recommended_calories = get_recommended_calories(age, request.user.gender)
+    today = timezone.localdate()
+    yesterday = today - timedelta(days=1)
 
-    user_profile, created = UserProfile.objects.get_or_create(
-        user=request.user,
-        defaults={
-            'target_calories': recommended_calories,
-            'target_exercise_minutes': 30
-            ,
-            'target_sleep_hours': 8
-        }
-    )
+    user_profile = UserProfile.objects.get(user=request.user)
+    target_calories = user_profile.target_calories
+    target_exercise_minutes = user_profile.target_exercise_minutes
+    target_sleep_hours = user_profile.target_sleep_hours
+
+    # 昨日の記録を取得
+    yesterday_food = FoodRecord.objects.filter(user=request.user, date=yesterday).aggregate(Sum('calories'))
+    yesterday_exercise = ExerciseRecord.objects.filter(user=request.user, date=yesterday).aggregate(Sum('duration'))
+    yesterday_sleep = SleepRecord.objects.filter(user=request.user, date=yesterday).aggregate(Sum('duration'))
+
+    # 達成度をパーセンテージで計算
+    food_achievement = (yesterday_food['calories__sum'] / target_calories * 100) if yesterday_food['calories__sum'] else 0
+    exercise_achievement = (yesterday_exercise['duration__sum'] / target_exercise_minutes * 100) if yesterday_exercise['duration__sum'] else 0
+    sleep_achievement = (yesterday_sleep['duration__sum'] / target_sleep_hours * 100) if yesterday_sleep['duration__sum'] else 0
 
     context = {
-        'recommended_calories': recommended_calories,
-        'target_calories': user_profile.target_calories,
-        'target_exercise_minutes': user_profile.target_exercise_minutes,
-        'target_sleep_hours': user_profile.target_sleep_hours,
+        'recommended_calories': get_recommended_calories(calculate_age(request.user.birth_date), request.user.gender),
+        'target_calories': target_calories,
+        'target_exercise_minutes': target_exercise_minutes,
+        'target_sleep_hours': target_sleep_hours,
+        'food_achievement': round(food_achievement, 2),
+        'exercise_achievement': round(exercise_achievement, 2),
+        'sleep_achievement': round(sleep_achievement, 2),
         'past_week_food': [record.calories for record in FoodRecord.objects.filter(user=request.user).order_by('-date')[:7]],
         'past_week_exercise': [record.duration for record in ExerciseRecord.objects.filter(user=request.user).order_by('-date')[:7]],
         'past_week_sleep': [record.duration for record in SleepRecord.objects.filter(user=request.user).order_by('-date')[:7]],
@@ -117,14 +127,12 @@ def main_menu(request):
 
 
 
-
-    # 過去7日間のデータを取得
     past_week_data = {
         'food': [record.calories for record in FoodRecord.objects.filter(user=request.user).order_by('-date')[:7]],
         'exercise': [record.duration for record in ExerciseRecord.objects.filter(user=request.user).order_by('-date')[:7]],
         'sleep': [record.duration for record in SleepRecord.objects.filter(user=request.user).order_by('-date')[:7]]
     }
-    # 未来予測用の平均値を計算
+   
     future_prediction = {
         'food': sum(past_week_data['food']) / len(past_week_data['food']) if past_week_data['food'] else 0,
         'exercise': sum(past_week_data['exercise']) / len(past_week_data['exercise']) if past_week_data['exercise'] else 0,

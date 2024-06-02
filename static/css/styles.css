@@ -438,29 +438,29 @@ input[type="date"] {
 }
 
 input[type="range"] {
-    width: 100%; /* 全幅を確保 */
-    height: 25px; /* 高さ調整 */
-    background: transparent; /* 透明背景 */
-    -webkit-appearance: none; /* スタイルのデフォルト設定を無効 */
-    margin: 10px 0; /* 上下のマージン */
-    transition: background-color 0.3s ease; /* 背景色の変更時のトランジション */
+    width: 100%; 
+    height: 25px; 
+    background: transparent; 
+    -webkit-appearance: none; 
+    margin: 10px 0; 
+    transition: background-color 0.3s ease; 
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-    background: #3071a9; /* トラックの背景色 */
-    height: 8px; /* トラックの高さ */
-    border-radius: 4px; /* トラックの角を丸く */
+    background: #3071a9; 
+    height: 8px; 
+    border-radius: 4px; 
 }
 
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    border: 1px solid #000000; /* つまみの境界線 */
-    height: 36px; /* つまみの高さ */
-    width: 16px; /* つまみの幅 */
-    border-radius: 3px; /* つまみの角を丸く */
-    background: #ffffff; /* つまみの背景色 */
-    cursor: pointer; /* カーソルを指の形に */
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; /* 影の設定 */
-    position: relative; /* 相対位置 */
-    top: -8px; /* 上に少し移動 */
+    border: 1px solid #000000; 
+    height: 36px; 
+    width: 16px; 
+    border-radius: 3px; 
+    background: #ffffff; 
+    cursor: pointer; 
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; 
+    position: relative; 
+    top: -8px; 
 }

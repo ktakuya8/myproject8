@@ -35,7 +35,8 @@
             <div id="warning" class="alert"></div>
 
             <label for="date" class="form-label">日付:</label>
-            <input type="date" id="date" name="date" value="{{ yesterday }}" class="input-date">
+            <input type="date" id="date" name="date" value="{{ today|date:'Y-m-d' }}" class="input-date">
+
 
             <button type="submit" class="button">保存</button>
         </form>
