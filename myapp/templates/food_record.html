@@ -23,6 +23,7 @@
         }
         .alert {
             color: red;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -35,12 +36,13 @@
                 <label for="calories">摂取カロリー(kcal):</label>
                 <input type="range" id="calories" name="calories" min="0" max="3000" step="50" value="{{ form.cleaned_data.calories|default:'1500' }}">
                 <span id="calories-output">{{ form.cleaned_data.calories|default:'1500' }} kcal</span>
+                <div id="calorieWarning" class="alert"></div>
             </div>
             <div class="form-group">
                 <label for="record_date">日付:</label>
                 <input type="date" id="record_date" name="date" required value="{{ today|date:'Y-m-d' }}">
             </div>
-            <button type="submit" class="btn btn-success">記録</button>
+            <button type="submit" class="btn btn-success">保存</button>
         </form>
 
         <h2>目安カロリー表</h2>
@@ -94,12 +96,21 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var slider = document.getElementById('calories');
-            var output = document.getElementById('calories-output');
+            const slider = document.getElementById('calories');
+            const output = document.getElementById('calories-output');
+            const warningDiv = document.getElementById('calorieWarning');
+
+            const recommendedCalories = {{ recommended_calories|safe }}; // セキュアに値を埋め込む
 
             slider.oninput = function() {
-                output.textContent = this.value + ' kcal'; 
-            }
+                const inputCalories = parseInt(this.value, 10);
+                output.textContent = inputCalories + ' kcal';
+                if (Math.abs(inputCalories - recommendedCalories) > 500) {
+                    warningDiv.textContent = '警告: 推奨カロリーから500kcal以上外れています！';
+                } else {
+                    warningDiv.textContent = '';
+                }
+            };
         });
     </script>
 </body>

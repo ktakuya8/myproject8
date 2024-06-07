@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const targetSleepHours = {{ target_sleep_hours }};
 
     createChart('foodChart', foodData, '摂取カロリー (kcal)', 'rgb(255, 99, 132)', targetCalories);
-    createChart('exerciseChart', exerciseData, '運動時間 (分)', 'rgb(54, 162, 235)',30);
-    createChart('sleepChart', sleepData, '睡眠時間 (時間)', 'rgb(75, 192, 192)', 8);
+    createChart('exerciseChart', exerciseData, '運動時間 (分)', 'rgb(54, 162, 235)',targetExerciseMinutes);
+    createChart('sleepChart', sleepData, '睡眠時間 (時間)', 'rgb(75, 192, 192)', targetSleepHours);
 });
 
 function createChart(chartId, data, label, borderColor, baseline) {
@@ -92,13 +92,13 @@ function createChart(chartId, data, label, borderColor, baseline) {
 </script>
 
 <div class="progress-container">
-    <p>カロリー摂取: <span id="calorieProgress">{{ food_achievement }}%</span></p>
+    <p>yesterday：カロリー摂取: <span id="calorieProgress">{{ food_achievement }}%</span></p>
 </div>
 <div class="progress-container">
-    <p>運動時間: <span id="exerciseProgress">{{ exercise_achievement }}%</span></p>
+    <p>yesterday：運動時間: <span id="exerciseProgress">{{ exercise_achievement }}%</span></p>
 </div>
 <div class="progress-container">
-    <p>睡眠時間: <span id="sleepProgress">{{ sleep_achievement }}%</span></p>
+    <p>yesterday：睡眠時間: <span id="sleepProgress">{{ sleep_achievement }}%</span></p>
 </div>
 
 
