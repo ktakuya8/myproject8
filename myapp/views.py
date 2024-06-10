@@ -8,6 +8,9 @@ from django.utils import timezone
 from datetime import date, timedelta
 from django.db.models import Sum
 from datetime import datetime
+from django.db.models import Avg
+
+
 
 def calculate_age(birthdate):
     today = datetime.today()
@@ -97,6 +100,11 @@ from django.db.models import Sum
 def main_menu(request):
     today = timezone.localdate()
     yesterday = today - timedelta(days=1)
+    two_days_ago = today - timedelta(days=2)
+    three_days_ago = today - timedelta(days=3)
+    four_days_ago = today - timedelta(days=4)
+    five_days_ago = today - timedelta(days=5)
+    seven_days_ago = today - timedelta(days=7)
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     target_calories = user_profile.target_calories 
     user = CustomUser.objects.get(id=request.user.id)
@@ -129,59 +137,109 @@ def main_menu(request):
     else:
         food_achievement = 0
 
+    past_week_records = {
+        'food': FoodRecord.objects.filter(user=request.user, date__gte=seven_days_ago).order_by('date'),
+        'exercise': ExerciseRecord.objects.filter(user=request.user, date__gte=seven_days_ago).order_by('date'),
+        'sleep': SleepRecord.objects.filter(user=request.user, date__gte=seven_days_ago).order_by('date')
+    }
+
+    averages = {
+        'food': sum(record.calories for record in past_week_records['food']) / len(past_week_records['food']) if past_week_records['food'] else 0,
+        'exercise': sum(record.duration for record in past_week_records['exercise']) / len(past_week_records['exercise']) if past_week_records['exercise'] else 0,
+        'sleep': sum(record.duration for record in past_week_records['sleep']) / len(past_week_records['sleep']) if past_week_records['sleep'] else 0,
+    }
+
+
+    two_days_ago_data = {
+        'food': past_week_records['food'].filter(date=two_days_ago).aggregate(Sum('calories'))['calories__sum'] or 0,
+        'exercise': past_week_records['exercise'].filter(date=two_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
+        'sleep': past_week_records['sleep'].filter(date=two_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
+    }
+
+    yesterday_data = {
+        'food': past_week_records['food'].filter(date=yesterday).aggregate(Sum('calories'))['calories__sum'] or 0,
+        'exercise': past_week_records['exercise'].filter(date=yesterday).aggregate(Sum('duration'))['duration__sum'] or 0,
+        'sleep': past_week_records['sleep'].filter(date=yesterday).aggregate(Sum('duration'))['duration__sum'] or 0,
+
+    }
+
+    three_days_ago_data = {
+    'food': FoodRecord.objects.filter(user=request.user, date=three_days_ago).aggregate(Sum('calories'))['calories__sum'] or 0,
+    'exercise': ExerciseRecord.objects.filter(user=request.user, date=three_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
+    'sleep': SleepRecord.objects.filter(user=request.user, date=three_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
+}
+
+    four_days_ago_data = {
+    'food': FoodRecord.objects.filter(user=request.user, date=four_days_ago).aggregate(Sum('calories'))['calories__sum'] or 0,
+    'exercise': ExerciseRecord.objects.filter(user=request.user, date=four_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
+    'sleep': SleepRecord.objects.filter(user=request.user, date=four_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
+}
+
+    five_days_ago_data = {
+    'food': FoodRecord.objects.filter(user=request.user, date=five_days_ago).aggregate(Sum('calories'))['calories__sum'] or 0,
+    'exercise': ExerciseRecord.objects.filter(user=request.user, date=five_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
+    'sleep': SleepRecord.objects.filter(user=request.user, date=five_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
+}
+
+    weights = {
+    'yesterday': 5,        
+    'two_days_ago': 4,      
+    'three_days_ago': 3,     
+    'four_days_ago': 2,     
+    'five_days_ago': 1      
+}
+    
+    future_predictions = {
+    'food': (
+        yesterday_data['food'] * weights['yesterday'] + 
+        two_days_ago_data['food'] * weights['two_days_ago'] + 
+        three_days_ago_data['food'] * weights['three_days_ago'] + 
+        four_days_ago_data['food'] * weights['four_days_ago'] + 
+        five_days_ago_data['food'] * weights['five_days_ago']
+    ) / sum(weights.values()),
+    
+    'exercise': (
+        yesterday_data['exercise'] * weights['yesterday'] + 
+        two_days_ago_data['exercise'] * weights['two_days_ago'] + 
+        three_days_ago_data['exercise'] * weights['three_days_ago'] + 
+        four_days_ago_data['exercise'] * weights['four_days_ago'] + 
+        five_days_ago_data['exercise'] * weights['five_days_ago']
+    ) / sum(weights.values()),
+
+    'sleep': (
+        yesterday_data['sleep'] * weights['yesterday'] + 
+        two_days_ago_data['sleep'] * weights['two_days_ago'] + 
+        three_days_ago_data['sleep'] * weights['three_days_ago'] + 
+        four_days_ago_data['sleep'] * weights['four_days_ago'] + 
+        five_days_ago_data['sleep'] * weights['five_days_ago']
+    ) / sum(weights.values())
+}
+
+    chart_data = {
+        'labels': ['過去1週間', '前々日', '前日', '未来予測'],
+        'food_data': [averages['food'], two_days_ago_data['food'], yesterday_data['food'], future_predictions['food']],
+        'exercise_data': [averages['exercise'], two_days_ago_data['exercise'], yesterday_data['exercise'], future_predictions['exercise']],
+        'sleep_data': [averages['sleep'], two_days_ago_data['sleep'], yesterday_data['sleep'], future_predictions['sleep']],
+    }    
+
     context = {
-        'recommended_calories': get_recommended_calories(age, converted_gender),  
+        'recommended_calories': target_calories,
         'target_calories': target_calories,
         'target_exercise_minutes': target_exercise_minutes,
         'target_sleep_hours': target_sleep_hours,
-        'food_achievement': max(food_achievement, 0),  
+        'food_achievement': max(food_achievement, 0),
         'exercise_achievement': round(exercise_achievement, 2),
         'sleep_achievement': round(sleep_achievement, 2),
-        'past_week_food': [record.calories for record in FoodRecord.objects.filter(user=request.user).order_by('-date')[:7]],
-        'past_week_exercise': [record.duration for record in ExerciseRecord.objects.filter(user=request.user).order_by('-date')[:7]],
-        'past_week_sleep': [record.duration for record in SleepRecord.objects.filter(user=request.user).order_by('-date')[:7]],
+        'chart_data': {
+            'labels': ['過去1週間', '前々日', '前日', '未来予測'],
+            'food_data': [averages['food'], two_days_ago_data['food'], yesterday_data['food'], future_predictions['food']],
+            'exercise_data': [averages['exercise'], two_days_ago_data['exercise'], yesterday_data['exercise'], future_predictions['exercise']],
+            'sleep_data': [averages['sleep'], two_days_ago_data['sleep'], yesterday_data['sleep'], future_predictions['sleep']],
+        }
     }
+
     return render(request, 'main_menu.html', context)
 
-
-
-
-    past_week_food_records = FoodRecord.objects.filter(user=request.user, date__gte=seven_days_ago)
-    past_week_exercise_records = ExerciseRecord.objects.filter(user=request.user, date__gte=seven_days_ago)
-    past_week_sleep_records = SleepRecord.objects.filter(user=request.user, date__gte=seven_days_ago)
-
-    past_week_food = [record.calories for record in past_week_food_records]
-    past_week_exercise = [record.duration for record in past_week_exercise_records]
-    past_week_sleep = [record.duration for record in past_week_sleep_records]
-
-    average_past_week_food = sum(past_week_food) / len(past_week_food) if past_week_food else 0
-    average_past_week_exercise = sum(past_week_exercise) / len(past_week_exercise) if past_week_exercise else 0
-    average_past_week_sleep = sum(past_week_sleep) / len(past_week_sleep) if past_week_sleep else 0
-
-    previous_food = FoodRecord.objects.filter(user=request.user, date=two_days_ago).aggregate(Sum('calories'))
-    previous_exercise = ExerciseRecord.objects.filter(user=request.user, date=two_days_ago).aggregate(Sum('duration'))
-    previous_sleep = SleepRecord.objects.filter(user=request.user, date=two_days_ago).aggregate(Sum('duration'))
-
-    yesterday_food = FoodRecord.objects.filter(user=request.user, date=one_day_ago).aggregate(Sum('calories'))
-    yesterday_exercise = ExerciseRecord.objects.filter(user=request.user, date=one_day_ago).aggregate(Sum('duration'))
-    yesterday_sleep = SleepRecord.objects.filter(user=request.user, date=one_day_ago).aggregate(Sum('duration'))
-   
-    future_prediction = {
-        'food': sum(past_week_data['food']) / len(past_week_data['food']) if past_week_data['food'] else 0,
-        'exercise': sum(past_week_data['exercise']) / len(past_week_data['exercise']) if past_week_data['exercise'] else 0,
-        'sleep': sum(past_week_data['sleep']) / len(past_week_data['sleep']) if past_week_data['sleep'] else 0
-    }
-
-    context = {
-        'recommended_calories': recommended_calories,
-        'past_week_food': past_week_data['food'],
-        'past_week_exercise': past_week_data['exercise'],
-        'past_week_sleep': past_week_data['sleep'],
-        'future_prediction_food': future_prediction['food'],
-        'future_prediction_exercise': future_prediction['exercise'],
-        'future_prediction_sleep': future_prediction['sleep']
-    }
-    return render(request, 'main_menu.html', context)
 
 
 

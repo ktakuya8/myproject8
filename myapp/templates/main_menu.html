@@ -8,7 +8,6 @@
 <div class="container mt-4">
     <h1 class="text-center">メインメニュー</h1>
     
-
     <div class="chart-container">
         <h2>食事記録</h2>
         <canvas id="foodChart"></canvas>
@@ -35,16 +34,14 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const foodData = {{ past_week_food|safe }};
-    const exerciseData = {{ past_week_exercise|safe }};
-    const sleepData = {{ past_week_sleep|safe }};
+    const chartData = {{ chart_data|safe }};
     const targetCalories = {{ target_calories }};
     const targetExerciseMinutes = {{ target_exercise_minutes }};
     const targetSleepHours = {{ target_sleep_hours }};
 
-    createChart('foodChart', foodData, '摂取カロリー (kcal)', 'rgb(255, 99, 132)', targetCalories);
-    createChart('exerciseChart', exerciseData, '運動時間 (分)', 'rgb(54, 162, 235)',targetExerciseMinutes);
-    createChart('sleepChart', sleepData, '睡眠時間 (時間)', 'rgb(75, 192, 192)', targetSleepHours);
+    createChart('foodChart', chartData.food_data, '摂取カロリー (kcal)', 'rgb(255, 99, 132)', targetCalories);
+    createChart('exerciseChart', chartData.exercise_data, '運動時間 (分)', 'rgb(54, 162, 235)', targetExerciseMinutes);
+    createChart('sleepChart', chartData.sleep_data, '睡眠時間 (時間)', 'rgb(75, 192, 192)', targetSleepHours);
 });
 
 function createChart(chartId, data, label, borderColor, baseline) {
@@ -100,6 +97,5 @@ function createChart(chartId, data, label, borderColor, baseline) {
 <div class="progress-container">
     <p>yesterday：睡眠時間: <span id="sleepProgress">{{ sleep_achievement }}%</span></p>
 </div>
-
 
 {% endblock %}
