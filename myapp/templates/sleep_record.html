@@ -79,7 +79,7 @@
             const durationValue = parseInt(this.value);
             durationDisplay.textContent = durationValue + '時間';
 
-            if (durationValue < 6 || durationValue > 10) {
+           if (durationValue < 6 || durationValue > 10) {
                 warningDiv.textContent = '警告: 推奨睡眠時間（6-10時間）から大きく外れています！';
             } else {
                 warningDiv.textContent = '';

@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="text-center">メインメニュー</h1>
+    <h1 class="text-center">{{ username }}さんのメインメニュー</h1>
     
     <div class="chart-container">
         <h2>食事記録</h2>
@@ -89,13 +89,13 @@ function createChart(chartId, data, label, borderColor, baseline) {
 </script>
 
 <div class="progress-container">
-    <p>yesterday：カロリー摂取: <span id="calorieProgress">{{ food_achievement }}%</span></p>
+    <p>昨日の達成度合い：カロリー摂取: <span id="calorieProgress">{{ food_achievement }}%</span></p>
 </div>
 <div class="progress-container">
-    <p>yesterday：運動時間: <span id="exerciseProgress">{{ exercise_achievement }}%</span></p>
+    <p>昨日の達成度合い：運動時間: <span id="exerciseProgress">{{ exercise_achievement }}%</span></p>
 </div>
 <div class="progress-container">
-    <p>yesterday：睡眠時間: <span id="sleepProgress">{{ sleep_achievement }}%</span></p>
+    <p>昨日の達成度合い：睡眠時間: <span id="sleepProgress">{{ sleep_achievement }}%</span></p>
 </div>
 
 {% endblock %}

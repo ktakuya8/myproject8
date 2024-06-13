@@ -38,14 +38,13 @@ def register(request):
             user.set_password(form.cleaned_data['password1'])
             user.save()
             login(request, user, backend='myapp.authentication.EmailBackend')  
-            print(request.user.is_authenticated)  
             return redirect('myapp:main_menu')
         else:
-            print("Form errors", form.errors)
-            print("Submitted birth date:", request.POST.get('birth_date'))
+            return render(request, 'registration/signup.html', {'form': form})
     else:
         form = CustomUserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
+
 
 
 def my_login_view(request):
@@ -109,6 +108,7 @@ def main_menu(request):
     target_calories = user_profile.target_calories 
     user = CustomUser.objects.get(id=request.user.id)
     age = (int(today.strftime("%Y%m%d")) - int(user.birth_date.strftime("%Y%m%d"))) // 10000
+    username = request.user.username
 
     converted_gender = convert_gender(user.gender)    
     target_calories = get_recommended_calories(age, converted_gender)    
@@ -237,6 +237,8 @@ def main_menu(request):
             'sleep_data': [averages['sleep'], two_days_ago_data['sleep'], yesterday_data['sleep'], future_predictions['sleep']],
         }
     }
+
+    context['username'] = username
 
     return render(request, 'main_menu.html', context)
 
