@@ -12,6 +12,7 @@ from django.db.models import Avg
 
 
 
+
 def calculate_age(birthdate):
     today = datetime.today()
     return today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
