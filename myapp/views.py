@@ -9,9 +9,12 @@ from datetime import date, timedelta
 from django.db.models import Sum
 from datetime import datetime
 from django.db.models import Avg
+from django.contrib import admin
+from django.urls import path, include
+from django.shortcuts import render
 
-
-
+def index_view(request):
+    return render(request, 'index.html')
 
 def calculate_age(birthdate):
     today = datetime.today()

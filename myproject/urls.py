@@ -1,9 +1,10 @@
+# myproject/urls.py
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic.base import RedirectView
+from myapp import views  # 'myapp'はあなたのアプリケーション名に置き換えてください
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='/accounts/login/'), name='go-to-login'),  # ルートからログインページへリダイレクト
+    path('', views.index_view, name='home'),  # ここで index_view を使用
     path('admin/', admin.site.urls),
-    path('accounts/', include('myapp.urls', namespace='myapp')),
+    path('accounts/', include('myapp.urls', namespace='myapp')),  # 'myapp' はあなたのアプリケーション名に適切に置き換えてください
 ]

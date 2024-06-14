@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>作品No.1 健康管理アプリ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 50px;
+            background-color: #007bff;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 20px 0;
+        }
+        .content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .buttons button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .buttons button:hover {
+            background-color: #0056b3;
+        }
+        iframe {
+            width: 100%;
+            height: 500px;
+            display: none;
+            border: none;
+            margin-top: 20px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #007bff;
+            color: white;
+        }
+        #access-button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #4CAF50; /* 緑色 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 4px #999;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        #access-button:hover {
+            background-color: #45a049; /* 濃い緑色 */
+            box-shadow: 0 6px #666;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>作品No.1 健康管理アプリ</h1>
+        <p>健康管理アプリの紹介ページ</p>
+    </div>
+    <div class="container">
+        <div class="content">
+            <img src="https://raw.githubusercontent.com/ktakuya8/myproject8/master/image.png.PNG" alt="健康管理アプリの画像">
+            <p>健康管理アプリでは食事・運動・睡眠ごとに記録用のフォームを提供し、
+                ユーザはフォーム上のいくつかの質問内容に回答するだけで手軽に日々の行動を記録できます。
+                       </p>
+            <div class="buttons">
+                <button onclick="showDocument('plan')">企画書</button>
+                <button onclick="showDocument('design')">設計図</button>
+                <button onclick="showDocument('er')">ER図</button>
+            </div>
+            <iframe id="viewer"></iframe>
+            <div>
+                <a href="{% url 'myapp:login' %}" class="btn btn-primary" id="access-button">このアプリにアクセス</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>© 2024 健康管理アプリ</p>
+    </div>
+
+    <script>
+        function showDocument(type) {
+            const viewer = document.getElementById('viewer');
+            viewer.style.display = 'block'; // ビューアを表示する
+    
+            switch (type) {
+                case 'plan':
+                    viewer.src = "https://raw.githubusercontent.com/ktakuya8/myproject8/master/最新plan.pdf.pdf";
+                    break;
+                case 'design':
+                    viewer.src = "https://raw.githubusercontent.com/ktakuya8/myproject8/master/design.pdf";
+                    break;
+                case 'er':
+                    viewer.src = "https://raw.githubusercontent.com/ktakuya8/myproject8/master/ER図最新.drawio.pdf"; // ER図の最新版PDF
+                    break;
+                default:
+                    viewer.style.display = 'none'; // 不適切な入力の場合は表示しない
+            }
+        }
+    </script>
+    
+</body>
+</html>

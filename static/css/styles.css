@@ -466,3 +466,26 @@ input[type="range"]::-webkit-slider-thumb {
 
     
 }
+
+.content {
+    display: flex;
+    flex-direction: column; /* 垂直方向に並べる */
+    align-items: center; /* 中央揃え */
+}
+
+.graph {
+    width: 80%; /* グラフの幅を調整 */
+    margin-bottom: 20px; /* グラフとテキスト間の間隔 */
+}
+
+.text-description {
+    width: 80%; /* 説明文の幅を調整 */
+    text-align: center; /* テキストを中央揃え */
+    margin-bottom: 20px; /* テキストとボタン間の間隔 */
+}
+
+.buttons {
+    width: 100%; /* ボタン領域の幅を調整 */
+    display: flex;
+    justify-content: space-around; /* ボタン間のスペースを均等に */
+}
