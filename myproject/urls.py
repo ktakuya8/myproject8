@@ -1,10 +1,10 @@
-# myproject/urls.py
+
 from django.contrib import admin
 from django.urls import path, include
-from myapp import views  # 'myapp'はあなたのアプリケーション名に置き換えてください
+from myapp import views  
 
 urlpatterns = [
-    path('', views.index_view, name='home'),  # ここで index_view を使用
+    path('', views.index_view, name='home'),  
     path('admin/', admin.site.urls),
-    path('accounts/', include('myapp.urls', namespace='myapp')),  # 'myapp' はあなたのアプリケーション名に適切に置き換えてください
+    path('accounts/', include('myapp.urls', namespace='myapp')),  
 ]
