@@ -160,9 +160,9 @@ def main_menu(request):
 
 
     two_days_ago_data = {
-        'food': past_week_records['food'].filter(date=two_days_ago).aggregate(Sum('calories'))['calories__sum'] or 0,
-        'exercise': past_week_records['exercise'].filter(date=two_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
-        'sleep': past_week_records['sleep'].filter(date=two_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
+        'food': FoodRecord.objects.filter(user=request.user, date=two_days_ago).aggregate(Sum('calories'))['calories__sum'] or 0,
+        'exercise': ExerciseRecord.objects.filter(user=request.user, date=two_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
+        'sleep': SleepRecord.objects.filter(user=request.user, date=two_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
     }
 
     today_data = {
@@ -172,10 +172,9 @@ def main_menu(request):
     }
 
     yesterday_data = {
-        'food': past_week_records['food'].filter(date=yesterday).aggregate(Sum('calories'))['calories__sum'] or 0,
-        'exercise': past_week_records['exercise'].filter(date=yesterday).aggregate(Sum('duration'))['duration__sum'] or 0,
-        'sleep': past_week_records['sleep'].filter(date=yesterday).aggregate(Sum('duration'))['duration__sum'] or 0,
-
+        'food': FoodRecord.objects.filter(user=request.user, date=yesterday).aggregate(Sum('calories'))['calories__sum'] or 0,
+        'exercise': ExerciseRecord.objects.filter(user=request.user, date=yesterday).aggregate(Sum('duration'))['duration__sum'] or 0,
+        'sleep': SleepRecord.objects.filter(user=request.user, date=yesterday).aggregate(Sum('duration'))['duration__sum'] or 0,
     }
 
     three_days_ago_data = {
@@ -250,6 +249,8 @@ def main_menu(request):
             'food_data': [averages['food'], two_days_ago_data['food'], yesterday_data['food'], today_data['food'],future_predictions['food']],
             'exercise_data': [averages['exercise'], two_days_ago_data['exercise'], yesterday_data['exercise'],today_data['exercise'],future_predictions['exercise']],
             'sleep_data': [averages['sleep'], two_days_ago_data['sleep'], yesterday_data['sleep'], today_data['sleep'],future_predictions['sleep']],
+            'yesterday_data': yesterday_data,
+            'two_days_ago_data': two_days_ago_data,
         }
     }
 
