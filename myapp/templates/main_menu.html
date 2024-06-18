@@ -49,7 +49,7 @@ function createChart(chartId, data, label, borderColor, baseline) {
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['過去1週間', '前々日', '前日', '未来予測'],
+            labels: ['過去1週間', '前々日', '前日', '当日','未来予測'],
             datasets: [{
                 label: label,
                 data: data,
@@ -89,13 +89,14 @@ function createChart(chartId, data, label, borderColor, baseline) {
 </script>
 
 <div class="progress-container">
-    <p>昨日の達成度合い：カロリー摂取: <span id="calorieProgress">{{ food_achievement }}%</span></p>
+    <p>昨日の達成度合い：カロリー摂取: <span id="calorieProgress">{{ food_achievement|floatformat:1 }}%</span></p>
 </div>
 <div class="progress-container">
-    <p>昨日の達成度合い：運動時間: <span id="exerciseProgress">{{ exercise_achievement }}%</span></p>
+    <p>昨日の達成度合い：運動時間: <span id="exerciseProgress">{{ exercise_achievement|floatformat:1 }}%</span></p>
 </div>
 <div class="progress-container">
-    <p>昨日の達成度合い：睡眠時間: <span id="sleepProgress">{{ sleep_achievement }}%</span></p>
+    <p>昨日の達成度合い：睡眠時間: <span id="sleepProgress">{{ sleep_achievement|floatformat:1 }}%</span></p>
 </div>
+
 
 {% endblock %}

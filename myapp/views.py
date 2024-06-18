@@ -108,6 +108,7 @@ def main_menu(request):
     four_days_ago = today - timedelta(days=4)
     five_days_ago = today - timedelta(days=5)
     seven_days_ago = today - timedelta(days=7)
+    nine_days_ago = today - timedelta(days=9)
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     target_calories = user_profile.target_calories 
     user = CustomUser.objects.get(id=request.user.id)
@@ -119,6 +120,10 @@ def main_menu(request):
 
     target_exercise_minutes = 30  
     target_sleep_hours = 8  
+
+    today_food = FoodRecord.objects.filter(user=request.user, date=today).aggregate(Sum('calories'))
+    today_exercise = ExerciseRecord.objects.filter(user=request.user, date=today).aggregate(Sum('duration'))
+    today_sleep = SleepRecord.objects.filter(user=request.user, date=today).aggregate(Sum('duration'))
 
     yesterday_food = FoodRecord.objects.filter(user=request.user, date=yesterday).aggregate(Sum('calories'))
     yesterday_exercise = ExerciseRecord.objects.filter(user=request.user, date=yesterday).aggregate(Sum('duration'))
@@ -142,9 +147,9 @@ def main_menu(request):
         food_achievement = 0
 
     past_week_records = {
-        'food': FoodRecord.objects.filter(user=request.user, date__gte=seven_days_ago).order_by('date'),
-        'exercise': ExerciseRecord.objects.filter(user=request.user, date__gte=seven_days_ago).order_by('date'),
-        'sleep': SleepRecord.objects.filter(user=request.user, date__gte=seven_days_ago).order_by('date')
+        'food': FoodRecord.objects.filter(user=request.user, date__gte=nine_days_ago, date__lt=two_days_ago).order_by('date'),
+        'exercise': ExerciseRecord.objects.filter(user=request.user, date__gte=nine_days_ago, date__lt=two_days_ago).order_by('date'),
+        'sleep': SleepRecord.objects.filter(user=request.user, date__gte=nine_days_ago, date__lt=two_days_ago).order_by('date')
     }
 
     averages = {
@@ -158,6 +163,12 @@ def main_menu(request):
         'food': past_week_records['food'].filter(date=two_days_ago).aggregate(Sum('calories'))['calories__sum'] or 0,
         'exercise': past_week_records['exercise'].filter(date=two_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
         'sleep': past_week_records['sleep'].filter(date=two_days_ago).aggregate(Sum('duration'))['duration__sum'] or 0,
+    }
+
+    today_data = {
+        'food': today_food['calories__sum'] or 0,
+        'exercise': today_exercise['duration__sum'] or 0,
+        'sleep': today_sleep['duration__sum'] or 0,
     }
 
     yesterday_data = {
@@ -220,10 +231,10 @@ def main_menu(request):
 }
 
     chart_data = {
-        'labels': ['過去1週間', '前々日', '前日', '未来予測'],
-        'food_data': [averages['food'], two_days_ago_data['food'], yesterday_data['food'], future_predictions['food']],
-        'exercise_data': [averages['exercise'], two_days_ago_data['exercise'], yesterday_data['exercise'], future_predictions['exercise']],
-        'sleep_data': [averages['sleep'], two_days_ago_data['sleep'], yesterday_data['sleep'], future_predictions['sleep']],
+        'labels': ['過去1週間', '前々日', '前日','当日' '未来予測'],
+        'food_data': [averages['food'], two_days_ago_data['food'], yesterday_data['food'],today_data['food'],  future_predictions['food']],
+        'exercise_data': [averages['exercise'], two_days_ago_data['exercise'], yesterday_data['exercise'],today_data['exercise'],  future_predictions['exercise']],
+        'sleep_data': [averages['sleep'], two_days_ago_data['sleep'], yesterday_data['sleep'], today_data['sleep'],future_predictions['sleep']],
     }    
 
     context = {
@@ -235,10 +246,10 @@ def main_menu(request):
         'exercise_achievement': round(exercise_achievement, 2),
         'sleep_achievement': round(sleep_achievement, 2),
         'chart_data': {
-            'labels': ['過去1週間', '前々日', '前日', '未来予測'],
-            'food_data': [averages['food'], two_days_ago_data['food'], yesterday_data['food'], future_predictions['food']],
-            'exercise_data': [averages['exercise'], two_days_ago_data['exercise'], yesterday_data['exercise'], future_predictions['exercise']],
-            'sleep_data': [averages['sleep'], two_days_ago_data['sleep'], yesterday_data['sleep'], future_predictions['sleep']],
+            'labels': ['過去1週間', '前々日', '前日', '当日','未来予測'],
+            'food_data': [averages['food'], two_days_ago_data['food'], yesterday_data['food'], today_data['food'],future_predictions['food']],
+            'exercise_data': [averages['exercise'], two_days_ago_data['exercise'], yesterday_data['exercise'],today_data['exercise'],future_predictions['exercise']],
+            'sleep_data': [averages['sleep'], two_days_ago_data['sleep'], yesterday_data['sleep'], today_data['sleep'],future_predictions['sleep']],
         }
     }
 
