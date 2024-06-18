@@ -27,8 +27,8 @@
         }
         .content {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+            flex-direction: column; /* 要素を縦に並べる */
+            align-items: center; /* 水平中央揃えを適用 */
             padding: 20px 0;
         }
         .content img {
@@ -38,6 +38,7 @@
         }
         .buttons {
             margin-top: 20px;
+            text-align: center; /* ボタンを中央に配置 */
         }
         .buttons a {
             background-color: #007bff;
@@ -63,19 +64,19 @@
         #access-button {
             padding: 15px 30px;
             font-size: 20px;
-            background-color: #4CAF50; 
+            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             box-shadow: 0 4px #999;
             transition: all 0.3s;
             cursor: pointer;
-            display: block; 
-            width: fit-content; 
-            margin: 20px auto; 
+            display: block;
+            width: fit-content;
+            margin: 20px auto;
         }
         #access-button:hover {
-            background-color: #45a049; 
+            background-color: #45a049;
             box-shadow: 0 6px #666;
             transform: translateY(-2px);
         }
@@ -92,7 +93,7 @@
             <p>健康管理アプリでは食事・運動・睡眠ごとに記録用のフォームを提供し、ユーザはフォーム上のいくつかの質問内容に回答するだけで手軽に日々の行動を記録できます。</p>
             <div class="buttons">
                 <a href="{% static 'images/kikaku.pdf' %}" target="_blank">企画書</a>
-                <a href="{% static 'images/sekkei.pdf' %}" target="_blank">設計図</a>
+                <a href="{% static 'images/sekkeizu.pdf' %}" target="_blank">設計図</a>
                 <a href="{% static 'images/er.svg' %}" target="_blank">ER図</a>
             </div>
         </div>

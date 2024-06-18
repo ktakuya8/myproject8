@@ -487,5 +487,15 @@ input[type="range"]::-webkit-slider-thumb {
 .buttons {
     width: 100%; /* ボタン領域の幅を調整 */
     display: flex;
-    justify-content: space-around; /* ボタン間のスペースを均等に */
+    justify-content: space-around; 
 }
+
+.content {
+    display: flex;
+    flex-direction: column; /* 子要素を縦に並べる */
+    align-items: center; /* 水平方向の中央揃え */
+    justify-content: center; /* 垂直方向の中央揃え */
+    width: 100%; /* コンテナの幅を指定 */
+    margin: auto; /* 自動的に余白を調整 */
+}
+
