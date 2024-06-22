@@ -267,6 +267,7 @@ def food_record(request):
     birthdate = user_profile.user.birth_date
     converted_gender = convert_gender(user_profile.user.gender)
     today = date.today()
+    five_days_ago = today - timedelta(days=5)
     age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 
     recommended_calories = get_recommended_calories(age, converted_gender)
@@ -288,7 +289,7 @@ def food_record(request):
     goal_calories = user_profile.target_calories
     achievement_percent = (yesterday_calories / goal_calories * 100) if goal_calories else 0
 
-    past_five_days_records = FoodRecord.objects.filter(user=request.user).order_by('-date')[:5]
+    past_five_days_records = FoodRecord.objects.filter(user=request.user, date__gte=five_days_ago).order_by('-date')
 
     context = {
         'form': form,
